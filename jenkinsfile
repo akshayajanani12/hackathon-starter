@@ -6,11 +6,26 @@ node {
      sh "git rev-parse --short HEAD > .git/commit-id"                        
      commit_id = readFile('.git/commit-id').trim()
    }
+   
+   
    stage('test') {
      nodejs(nodeJSInstallationName: 'node') {
        sh 'npm install'
        sh 'npm test'
      }
    }
-  
+   stage('Continous Testing - Unit Test') {
+            steps {
+                sh 'npm test'
+                // publish html
+                publishHTML target: [
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: false,
+                    keepAll: true,
+                    reportDir: 'mochawesome-report',
+                    reportFiles: 'mochawesome.html',
+                    reportName: 'Unit Testing Report'
+                ]
+            }
+        }
 }
